@@ -1,0 +1,17 @@
+docker build -t mpi-docker-proyecto .
+docker tag mpi-docker-proyecto gcr.io/second-impact-327701/mpi-docker-proyecto
+docker push gcr.io/second-impact-327701/mpi-docker-proyecto
+kubectl apply -f mipod.yaml
+
+chmod +x pod_copy.sh
+./pod_copy.sh
+
+for podname in $(kubectl get pods -o json| jq -r '.items[].metadata.name'); do kubectl cp hosts ${podname}:/mpi/; done
+
+kubectl exec [pod] -- mpiexec -f hosts -n 2 python3 project.py
+
+kubectl exec mpi-docker-6cb58bc9f6-nbfwh -- mpiexec -f hosts -n 2 python3 project.py
+
+kubectl exec mpi-docker-77d7cb5ddb-rpc4h -- mpiexec -f hosts -n 2 python3 project.py 1 8 4
+
+kubectl get pods -l app=mpi-docker -o custom-columns=:metadata.name
