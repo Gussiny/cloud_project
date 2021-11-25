@@ -2,15 +2,29 @@ from mpi4py import MPI
 import os
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
-from google.cloud import firestore, storage
+from google.cloud import firestore
 from math import pi, sqrt
 from subprocess import check_output
+from datetime import datetime
 
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/mpi/fire.json"
 comm = MPI.COMM_WORLD
 r = comm.Get_rank()
 
 app = Flask(__name__)
 CORS(app)
+
+
+def postFirebase( figura, area, volumen ):
+    db = firestore.Client()
+    data = {
+        u'figura': figura,
+        u'area': area,
+        u'volumen': volumen
+    }
+    ct = datetime.now().strftime("%m-%d-%Y-%H:%M:%S")
+    db.collection(u'resultados').document(ct).set(data)
+    
 
 @app.route("/")
 def hello():
@@ -34,6 +48,11 @@ def getCilindro():
             area = comm.recv( source = 0, tag = 11)
             result.append( round(area, 2) )
 
+        if ( len(result) ):
+            postFirebase('cilindro', result[0], result[1])
+        else:
+            result = [0, 0]
+              
         response = jsonify({'Resultados': result})
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
@@ -49,10 +68,15 @@ def getCubo():
             comm.send( area, dest = 1, tag = 11)
         elif r == 1:
             volumen = (altura ** 3)
-            result.append( round(volumen, 2) )
             area = comm.recv( source = 0, tag = 11)
             result.append( round(area, 2) )
-        
+            result.append( round(volumen, 2) )
+
+        if ( len(result) ):
+            postFirebase('cubo', result[0], result[1])
+        else:
+            result = [0, 0]
+
         response = jsonify({'Resultados': result})
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
@@ -68,9 +92,14 @@ def getEsfera():
             comm.send( area, dest = 1, tag = 11)
         elif r == 1:
             volumen = ( 4 * pi  * (radio ** 3) ) / 3
-            result.append( round(volumen, 2) )
             area = comm.recv( source = 0, tag = 11)
             result.append( round(area, 2) )
+            result.append( round(volumen, 2) )
+        
+        if ( len(result) ):
+            postFirebase('esfera', result[0], result[1])
+        else:
+            result = [0, 0]
         
         response = jsonify({'Resultados': result})
         response.headers.add('Access-Control-Allow-Origin', '*')
@@ -90,9 +119,14 @@ def getCono():
             comm.send( area, dest = 1, tag = 11)
         elif r == 1:
             volumen = ( (radio ** 2) * pi  * altura ) / 3
-            result.append( round(volumen, 2) )
             area = comm.recv( source = 0, tag = 11)
             result.append( round(area, 2) )
+            result.append( round(volumen, 2) )
+        
+        if ( len(result) ):
+            postFirebase('cono', result[0], result[1])
+        else:
+            result = [0, 0]
         
         response = jsonify({'Resultados': result})
         response.headers.add('Access-Control-Allow-Origin', '*')
@@ -112,9 +146,14 @@ def getPrisma():
             comm.send( area, dest = 1, tag = 11)
         elif r == 1:
             volumen = ancho * largo * altura
-            result.append( round(volumen, 2) )
             area = comm.recv( source = 0, tag = 11)
             result.append( round(area, 2) )
+            result.append( round(volumen, 2) )
+        
+        if ( len(result) ):
+            postFirebase('prisma', result[0], result[1])
+        else:
+            result = [0, 0]
         
         response = jsonify({'Resultados': result})
         response.headers.add('Access-Control-Allow-Origin', '*')
