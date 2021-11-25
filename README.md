@@ -25,6 +25,9 @@ https://drive.google.com/file/d/1qANCR8jGoJ3ysm_3q5jr3XIiuwPvqjhu/view?usp=shari
 #### Crear el cluster a partir del *.yaml*:
 `kubectl apply -f mipod.yaml`
 
+> ##### Para poder eliminar el deploy actual usamos el comando:
+> `kubectl delete deploy mpi-docker`
+
 #### Dar permismos al archivo *.sh* para poder correrlo:
 `chmod +x pod_copy.sh`
 
