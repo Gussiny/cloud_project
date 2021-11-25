@@ -4,8 +4,8 @@ El proyecto consta de una aplicación hecha en Flask con Python en donde se busc
 
 Una vez que son calculados se muestran dentro de la misma página de la app y a su vez los resultados son almacenados en tiempo real en una base de datos de Firestore donde se podrán consultar los mismos como si fuera un historial.
 
-##### Link al Drive:
-https://drive.google.com/drive/folders/1xIay03-VA2r6Z_bmqGkpYpqoI_yBngXx?usp=sharing
+##### Link al Video:
+https://drive.google.com/file/d/1qANCR8jGoJ3ysm_3q5jr3XIiuwPvqjhu/view?usp=sharing
 
 ----
 # Instrucciones
